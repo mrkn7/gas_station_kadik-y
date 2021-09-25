@@ -1,0 +1,61 @@
+---
+title: "Gas_station_kadiköy"
+author: "Mehmet Ali Erkan"
+output:
+  html_document: default
+  pdf_document: default
+---
+```{r setup, include=FALSE}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+library(tidyverse)
+library(magrittr)
+library(dplyr)
+library(rvest)
+library(xml2)
+library(leaflet)
+library(maps)
+library(mapdata)
+library(RgoogleMaps)
+library(rworldmap)
+library(dplyr)
+library(ggplot2)
+
+gas_station <- read.csv("Akaryakıt.csv")
+kadıköy_gas_station <- gas_station %>% filter(COUNTY_NAME == "KADIKÖY")
+```
+
+```{r}
+leafIcons <- makeIcon(
+  iconUrl = 'https://cdn-icons-png.flaticon.com/512/846/846347.png'
+  ,
+  iconWidth = 14, iconHeight = 17,
+  iconAnchorX  =14, iconAnchorY = 20 
+)
+```
+
+
+```{r} 
+kadıköy_gas_station%>% 
+  leaflet() %>% 
+  addProviderTiles("Esri") %>% 
+  addMarkers(~LONGTITUDE, ~LATITUDE,
+             label = ~FUEL_DISTRIBUTION_COMPANY_DESC,
+             popup = paste0(
+               "<b>Fuel Name: </b>",
+               kadıköy_gas_station$FUEL_DISTRIBUTION_COMPANY_DESC,
+               "<br>",
+               "<b>Neighborhood Name: </b>",
+               kadıköy_gas_station$NEIGHBORHOOD_NAME),
+             icon = leafIcons) %>% 
+  setView(lng = median(kadıköy_gas_station$LONGTITUDE),
+          lat = median(kadıköy_gas_station$LATITUDE),
+          zoom = 10)
+```
+
+
+
+
